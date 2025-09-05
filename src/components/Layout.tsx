@@ -17,7 +17,7 @@ const Layout = ({ children }: LayoutProps) => {
             <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
               <Home className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl font-semibold text-gray-900">CivicReport</span>
+            <span className="text-xl font-semibold text-gray-900">Sudhaar</span>
           </div>
         </div>
 
