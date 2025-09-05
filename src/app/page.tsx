@@ -1,7 +1,10 @@
+// File: src/app/page.tsx (ROOT PAGE - LOGIN)
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from './contexts/AuthContext';
+import "./login.css";
 
 export default function LoginPage() {
   const [userId, setUserId] = useState('');
@@ -10,8 +13,16 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const router = useRouter();
+  const { login, isAuthenticated } = useAuth();
 
-  // Validation function
+  // Redirect to dashboard if already logged in
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push('/dashboard');
+    }
+  }, [isAuthenticated, router]);
+
+  // Validation function (now moved to AuthContext, but keeping for error messages)
   const validateLogin = (uid: string, pwd: string) => {
     const hardcodedUid = "123456789";
     const hardcodedPwd = "1111";
@@ -34,17 +45,20 @@ export default function LoginPage() {
     // Simulate login process
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    // Validate login
-    const validationError = validateLogin(userId, password);
-    if (validationError) {
-      setError(validationError);
-    } else {
+    // Use the AuthContext login function
+    const loginSuccess = login(userId, password);
+    
+    if (loginSuccess) {
       setSuccess("Login successful! Redirecting...");
       
       // Redirect to dashboard after 1.5 seconds
       setTimeout(() => {
         router.push("/dashboard");
       }, 1500);
+    } else {
+      // Use validation function for specific error messages
+      const validationError = validateLogin(userId, password);
+      setError(validationError);
     }
 
     setIsLoading(false);
@@ -112,7 +126,7 @@ export default function LoginPage() {
 
             {/* Password Field */}
             <div className="form-group">
-              <input
+            <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
